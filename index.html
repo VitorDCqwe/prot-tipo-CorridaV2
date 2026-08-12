@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo Corrida de carro</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <style>
+        canvas{
+            background: #eee;
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #333;
+
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">🏁 Protótipo Corrida – Jogador Azul x Jogador Verde 🏁</h2>
+    <p style="text-align: center;">Use as SETAS para mover o Azul e WSD para mover o Verde</p>
+    <canvas id="game" width="500" height="300"></canvas>
+
+    <script>
+        const canvas = document.getElementById("game");
+        const ctx = canvas.getContext("2d");
+        let playerX = 20;
+        let playerY = 100;
+        let player2X = 20;
+        let player2Y = 180;
+        let finishLine = 450;
+        let obstacles = [
+            {x: 200, y: 80, w: 20, h: 60},
+            {x: 300, y: 150, w: 20, h: 60}
+        ]
+
+        const size = 30;
+
+        function draw(){
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(finishLine, 0, 10, canvas.height);
+            ctx.fillStyle = "blue";
+            ctx.fillRect(playerX, playerY, size, size);
+            ctx.fillStyle = "green";
+            ctx.fillRect(player2X, player2Y, size, size);
+            ctx.fillStyle = "black"
+            obstacles.forEach(obs => {
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h)
+            })
+        }
+
+        function checkCollision(x, y) {
+            return obstacles.some(obs => 
+                x < obs.x + obs.w &&
+                x + size > obs.x &&
+                y < obs.y + obs.h &&
+                y + size > obs.y
+            )
+        }
+
+        function resetPlayers() {
+            playerX = 20;
+            playerY = 100;
+            player2X = 20;
+            player2Y = 180;
+        }
+
+        function checkWin() {
+            if(playerX >= finishLine) {
+                alert("O Azul Venceu!");
+                resetPlayers();
+            }
+            if(player2X >= finishLine) {
+                alert("O Verde Venceu!");
+                resetPlayers();
+            }
+        }
+
+        document.addEventListener("keydown", (e) => {
+            if(e.key === "ArrowRight") playerX += 10;
+            if(e.key === "ArrowUp") playerY -= 10;
+            if(e.key === "ArrowDown") playerY += 10;
+            if(e.key === "d") player2X += 10;
+            if(e.key === "w") player2Y -= 10;
+            if(e.key === "s") player2Y += 10;
+            if(checkCollision(playerX, playerY)) {
+                alert("Jogador Azul bateu em um Obstáculo");
+                resetPlayers();
+            }
+            if(checkCollision(player2X, player2Y)) {
+                alert("Jogador Verde bateu em um Obstáculo");
+                resetPlayers();
+            }
+            checkWin();
+        })
+
+        function update(){
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        update();
+
+
+    </script>
+
+</body>
+</html>
